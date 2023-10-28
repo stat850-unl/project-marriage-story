@@ -29,9 +29,15 @@ If you cannot link directly to the data file, then you need to additionally desc
 
 Provide some code to read in the data (either stored in the repository or read in directly from the source).
 
+```{r}
+library(readr)
+data <- read.csv("age_gaps.csv")
+head(data)
+```
+
 ### Description
 
-This dataset contains information about ...
+This dataset contains information about...
 
 It was collected from ...
 
@@ -39,22 +45,37 @@ Here is a data dictionary showing each variable, the type of variable, units, an
 
 Note: this is an example table, please modify to actually match your data. Ensure that all of the same information is represented.
 
-+-------------+---------------------------------------------------------+-------------+-------+---------------------------------------------------------------+
-| Name        | Description                                             | Type        | Units | Range/Values                                                  |
-+=============+=========================================================+=============+=======+===============================================================+
-| day_of_week | The day of the week on which the observation took place | categorical | NA    | 0 = Sunday\                                                   |
-|             |                                                         |             |       | 1 = Monday\                                                   |
-|             |                                                         |             |       | ...\                                                          |
-|             |                                                         |             |       | 6 = Saturday\                                                 |
-|             |                                                         |             |       | 7 = Unknown                                                   |
-+-------------+---------------------------------------------------------+-------------+-------+---------------------------------------------------------------+
-| weight      | The weight of the individual                            | numeric     | lbs   | 0 - 300 (max weight measurable on the scale used)\            |
-|             |                                                         |             |       | NA indicates missing data                                     |
-+-------------+---------------------------------------------------------+-------------+-------+---------------------------------------------------------------+
-| time        | The time of the observation                             | numeric     | HHMM  | 0000 corresponds to midnight,                                 |
-|             |                                                         |             |       |                                                               |
-|             |                                                         |             |       | 2359 corresponds to 1 minute before midnight on the same day. |
-+-------------+---------------------------------------------------------+-------------+-------+---------------------------------------------------------------+
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| Name               | Description                                            | Type    | Units   | Range/Values              |
++====================+========================================================+=========+=========+===========================+
+| movie_name         | Name of the movie couples met and play in              | string  | NA      | NA                        |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| release year       | The year that movie released                           | numeric | year    | 1935 - 2022               |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| director           | Name of the director of the movie                      | string  | NA      | NA                        |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| age_difference     | Difference of two partners' age                        | numeric | year    | 0 - 52                    |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| couple_number      | number of couples play role in that movie.             | numeric | person  | 1-7                       |
+|                    |                                                        |         |         |                           |
+|                    | It's been written like number 1 = ,,, number 2 = ,,,,  |         |         |                           |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_1_name       | name of the actor 1                                    | string  | NA      | NA                        |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_2_name       | name of the actor 2                                    | string  | NA      | NA                        |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| character_1_gender | gender of the actor 1                                  | string  | NA      | woman / man               |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| character_2_gender | gender of the actor 2                                  | string  | NA      | woman / man               |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_1_birthdate  | Birth date of actor 1                                  | date    | NA      | 1889-04-16  - 1996-06-01  |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_2_birthdate  | Birth date of actor 2                                  | date    | NA      | 1906-10-06  - 1996-11-11  |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_1_age        | Age of actor 1                                         | numeric | year    | 18 - 81                   |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
+| actor_2_age        | Age of actor 2                                         | numeric | year    | 17-68                     |
++--------------------+--------------------------------------------------------+---------+---------+---------------------------+
 
 ## Project Goals
 
@@ -62,8 +83,8 @@ Describe why this data is interesting and what you hope to do with it.
 
 We will use \[dataset\] to explore the following topics:
 
--   interesting thing 1
--   interesting thing 2
+-   What directors tend to use couples in their movies
+-   Does the trend of using couples
 -   ...
 
 We expect to create
@@ -74,6 +95,10 @@ We expect to create
 -   ...
 
 ## Division of Labor
+
+**Mahsa:**
+
+**Luka:**
 
 Describe how you plan to work together as a team. Set intermediate deadlines - what do you plan to have done by the project check-in? The more you have done (report/slides/code), the better feedback I can give you.
 
