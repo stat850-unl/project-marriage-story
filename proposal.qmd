@@ -83,16 +83,22 @@ Describe why this data is interesting and what you hope to do with it.
 
 We will use \[dataset\] to explore the following topics:
 
--   What directors tend to use couples in their movies
--   Does the trend of using couples
--   ...
+-   Is there a relationship between directors and the number of couples who start dating in their movies?
+
+-   Is there a relationship between the year and the number of couples per movie? Did it become more common over the years or not?
+
+-   Actors who tend to date their coworkers in movies.
+
+-   Is there a relationship between the birth month of actors and the age difference with their partners?
+
+-   Do men tend to date younger girls or older ones? What about women?
+
+-   
 
 We expect to create
 
--   description of some of the graphs you might create
--   a shiny application
--   a statistical model
--   ...
+-   
+-   
 
 ## Division of Labor
 
