@@ -26,12 +26,6 @@ In the proposal as in the final report, all of your code chunks should be set so
 
 The data we are using in this project comes from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-14/age_gaps.csv) website.
 
-If you cannot link directly to the data file, then you need to additionally describe how someone could acquire the same data:
-
-> You can download the data directly using \[process\]
-
-Provide some code to read in the data (either stored in the repository or read in directly from the source).
-
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(readr)
 data <- read.csv("age_gaps.csv")
@@ -102,58 +96,67 @@ We expect to create
 
 -   Statistical tests (correlation, trends...)
 
-## Division of Labor
-
-**Mahsa:**
-
-**Luka:**
-
-Describe how you plan to work together as a team. Set intermediate deadlines - what do you plan to have done by the project check-in? The more you have done (report/slides/code), the better feedback I can give you.
-
 ## Project Teamwork Plan
 
-It is important to note that both Masha and Luka will collaborate closely and divide the tasks as the work progresses. This is just a preliminary division. 
+It is important to note that both Masha and Luka will collaborate closely and divide the tasks as the work progresses. This is just a preliminary division.
 
 **Phase 1: Data Preparation and Exploration**
 
-1. **Task Division:**
-   - Mahsa will set up the data analysis environment and prepare basic visualization.
-   - Luka will focus on data cleaning and initial exploration
-
-2. **Intermediate Deadline (Project Check-In 1):**
-   - Mahsa: Set up the analysis environment and produce basic data visualizations.
-   - Luka: Complete data cleaning and preliminary data summary.
+1.  **Task Division:**
+    -   Mahsa will set up the data analysis environment and prepare basic visualization.
+    -   Luka will focus on data cleaning and initial exploration
+2.  **Intermediate Deadline (Project Check-In 1):**
+    -   Mahsa: Set up the analysis environment and produce basic data visualizations.
+    -   Luka: Complete data cleaning and preliminary data summary.
 
 **Phase 2: In-Depth Analysis**
 
-3. **Task Division:**
-   - Mahsa will explore relationships between variables and create advanced visualizations.
-   - Luka perform detailed statistical analysis.
-
-4. **Intermediate Deadline (Project Check-In 2):**
-   - Mahsa: Present advanced data visualizations and insights on relationships between variables.
-   - Luka: Share detailed statistical findings and any textual analysis results.
+3.  **Task Division:**
+    -   Mahsa will explore relationships between variables and create advanced visualizations.
+    -   Luka perform detailed statistical analysis.
+4.  **Intermediate Deadline (Project Check-In 2):**
+    -   Mahsa: Present advanced data visualizations and insights on relationships between variables.
+    -   Luka: Share detailed statistical findings and any textual analysis results.
 
 **Phase 3: Advanced Analysis and Insights**
 
-5. **Task Division:**
-   - Mahsa will focus on visualizing complex relationships and patterns within the data.
-   - Luka will delve into advanced data analysis techniques to extract insights from the dataset.
-
-6. **Intermediate Deadline (Project Check-In 3):**
-   - Mahsa: Present complex visualizations and patterns discovered in the data.
-   - Luka: Share the advanced data analysis findings and insights.
+5.  **Task Division:**
+    -   Mahsa will focus on visualizing complex relationships and patterns within the data.
+    -   Luka will delve into advanced data analysis techniques to extract insights from the dataset.
+6.  **Intermediate Deadline (Project Check-In 3):**
+    -   Mahsa: Present complex visualizations and patterns discovered in the data.
+    -   Luka: Share the advanced data analysis findings and insights.
 
 **Phase 4: Final Report and Presentation**
 
-7. **Task Division:**
-   - Mahsa and Luka will collaborate on creating the final project report, including key findings, visualizations, and conclusions.
-   - Together, we'll prepare the presentation for the project.
-
-8. **Final Deadline (Project Completion):**
-   - Submit the final project report and present our findings and insights to the Class.
-
+7.  **Task Division:**
+    -   Mahsa and Luka will collaborate on creating the final project report, including key findings, visualizations, and conclusions.
+    -   Together, we'll prepare the presentation for the project.
+8.  **Final Deadline (Project Completion):**
+    -   Submit the final project report and present our findings and insights to the Class.
 
 ## Additional Comments
 
 What concerns do you have about this project? This is your place to provide feedback about the project guidelines and ask clarifying questions for me to address either individually or in class, if the question is relevant to everyone.
+
+
+
+
+-----
+
+Proposal feedback:
+
+git fame output:
+
+project-marriage-story$ git fame . --incl=".(q|R)md
+"Processing: 100%|█████████████████████| 4/4 [00:00<00:00, 227.08file/s]
+Total commits: 5
+Total ctimes: 24
+Total files: 6
+Total loc: 395
+| Author                |   loc |   coms |   fils |  distribution   |
+|:----------------------|------:|-------:|-------:|:----------------|
+| github-classroom[bot] |   288 |      1 |      4 | 72.9/20.0/66.7  |
+| LukaUNL               |    88 |      2 |      1 | 22.3/40.0/16.7  |
+| mahmhmmdi             |    19 |      2 |      1 | 4.8/40.0/16.7   |
+
