@@ -42,6 +42,60 @@ Describe any data cleaning and rearranging you needed to do to get your dataset 
 
 ## Topic of Exploration
 
+```{r}
+dat = read.csv("age_gaps.csv")
+library(tidyverse)
+
+dat$actor_1_birthdate = ymd(dat$actor_1_birthdate)
+dat$actor_2_birthdate = ymd(dat$actor_2_birthdate)
+
+dat %>% 
+filter(character_1_gender == character_2_gender)
+
+```
+
+1.  **Descriptive Statistics:**
+
+    -   Calculate basic statistics such as mean, median, and standard deviation for age and age gap.
+
+    -   Create histograms or box plots to visualize the distribution of ages and age gaps.
+
+2.  **Relationship Dynamics:**
+
+    -   Explore the correlation between age and age gap. Are there trends or patterns that suggest certain age differences are more common?
+
+    -   Investigate if there's a relationship between the age of the actors and the duration of their relationships.
+
+3.  **Temporal Analysis:**
+
+    -   Examine if there are trends over time. For example, has there been a change in the average age gap between actors over the years?
+
+    -   Identify if certain age groups are more likely to date each other during specific periods.
+
+4.  **Network Analysis:**
+
+    -   Construct a network graph representing relationships between actors. Analyze the network structure, identifying key actors who are connected to many others.
+
+    -   Explore whether certain actors tend to form relationships with a specific age group.
+
+5.  **Gender Analysis:**
+
+    -   Investigate if there are gender-based differences in age gaps or relationship durations.
+
+    -   Analyze whether there are patterns in the types of movies or genres where age gaps are more prominent based on gender.
+
+6.  **Regression Analysis:**
+
+    -   Build regression models to predict age gap based on various factors such as the age of each actor, movie genre, and movie release year.
+
+7.  **Longitudinal Analysis:**
+
+    -   Examine the changes in the age gap between actors over the course of multiple movies or years.
+
+8.  **Outlier Detection:**
+
+    -   Identify any outliers in the dataset, and explore whether these outliers have common characteristics.
+
 Here, you want to introduce the first topic you want to explore with your (newly cleaned up) data. Code to process data should be contained in chunks above this point, and those chunks should *not* be included in the report.
 
 You can add options to executable code like this
