@@ -40,8 +40,6 @@ Describe any data cleaning and rearranging you needed to do to get your dataset 
 
 > we used the group-apply-combine paradigm with the `dplyr` functions `group_by` and `summarize` [@dplyr-package] to generate a dataset for each day of the observation period from the 15-minute interval observations in the raw data set.
 
-## Topic of Exploration
-
 ```{r}
 dat = read.csv("age_gaps.csv")
 library(tidyverse)
@@ -53,10 +51,25 @@ dat %>%
 filter(character_1_gender == character_2_gender)
 
 ```
+## Topic of Exploration
+
 
 1.  **Descriptive Statistics:**
 
     -   Calculate basic statistics such as mean, median, and standard deviation for age and age gap.
+```{r}
+summary(dat)
+library(ggplot2)
+
+age <- c(dat$actor_1_age, dat$actor_2_age)
+age <- as.data.frame(age)
+# Create a histogram
+ggplot(age, aes(x=age)) +
+  geom_histogram(bins=30, position='identity', alpha=0.7, color='black') +
+  labs(title='Combined Histogram of Actor Ages', x='Age', y='Frequency') +
+  scale_fill_manual(values=c('actor1_age'='red', 'actor2_age'='blue'))
+```
+  
 
     -   Create histograms or box plots to visualize the distribution of ages and age gaps.
 
