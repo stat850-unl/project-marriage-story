@@ -11,8 +11,8 @@ editor: visual
 # software on someone's computer without their consent.
 
 # This works for packages that are on CRAN
-if (!"dplyr" %in% installed.packages()) {
-  install.packages("dplyr")
+if (!"tidyverse" %in% installed.packages()) {
+  install.packages("tidyverse")
 }
 if (!"remotes" %in% installed.packages()) {
   install.packages("remotes")
@@ -30,35 +30,70 @@ if (!"emo" %in% installed.packages()) {
 
 ## Introduction
 
-Introduce your dataset and basic questions for exploration. Explain any unique approaches you will take or any interesting features of your dataset that you have to overcome. Cite the source of your dataset, and briefly discuss how it was collected.
+The dataset, sourced from [Hollywood age gap site](https://hollywoodagegap.com/), provides information on movies and the age gaps between the love interests portrayed by actors. The variables include movie name, movie release year, director, age difference, number of couples, names and of the actors involved in romance, their birth dates and age, as well as the gender of character they are portraying in the movie. Given its primary focus on significant age differences between actors portraying characters in love, the dataset does not exhibit anomalies. It is designed to highlight and analyze substantial variations in age within the context of romantic relationships depicted in films.
 
-Discuss the variables in the dataset and if there are anomalies in the variables, provide some visual assessment of the anomalies and explain how they may have arisen. You should cover most of the information in your proposal data section, but should primarily use paragraphs and not lists/tables (the exception may be a list of e.g. items which were measured).
+The unique aspect of this dataset is its focus on age gaps in romantic relationships within movies. The dataset is curated based on specific rules, ensuring that the actors portrayed actual love interests, with the youngest being at least 17 years old. Additionally, the dataset excludes animated characters, emphasizing real-life portrayals of romantic relationships in films.
+
+1.  What is the distribution of age differences between love interests in movies?
+
+2.  Are there trends in age differences over the years?
+
+3.  Which directors have the highest average age differences in their movies?
+
+4.  Do trends in the relations between genders change over the year?
 
 ## Methods
 
-Describe any data cleaning and rearranging you needed to do to get your dataset into a workable form. Make sure to cite any packages which were important in your data cleaning process in this section. For instance, if you used dplyr, then it would be appropriate to say something like
+We utilized the tidyverse package, specifically relaying on the functionalities of the `dplyr` and `lubridate` packages for effective data manipulation. Tidyverse is a comprehensive suite designed to streamline data analysis and visualization workflows. Within this framework, dplyr provides versatile tools for data manipulation tasks.
 
-> we used the group-apply-combine paradigm with the `dplyr` functions `group_by` and `summarize` [@dplyr-package] to generate a dataset for each day of the observation period from the 15-minute interval observations in the raw data set.
+Our dataset was already organized by the principles of tidy data, which advocates for a standardized organization of datasets. This organizational structure involves arranging variables in columns, observations in rows, and maintaining a singular observational unit in each table. The structured format of our data minimized the need for extensive manipulation.
+
+The `dplyr` package's `mutate` function played a central role in our data manipulation process. This function facilitated the creation and modification of variables within the dataset, enabling the seamless introduction of calculated columns tailored to our analytical needs. Combined with `ymd` function from `lubridate` package, we have successfully ensured the transformation of the birth date variable into a standardized Date type within the dataset. Additionaly, we emplyed `skim` fucntion from `skimr` package to derive a simple overveiw of the data. 
+
+```{r, results = 'hide'}
+#| echo: false
+dat = read.csv("age_gaps.csv")
+library(tidyverse)
+library(skimr)
+
+glimpse(dat)
+
+dat %>%
+  mutate(actor_1_birthdate = ymd(actor_1_birthdate),
+         actor_2_birthdate = ymd(actor_2_birthdate)) -> dat
+
+dat_long <- dat %>%
+  gather(key = "actor", value = "age", actor_1_age, actor_2_age)
+```
 
 ## Topic of Exploration
 
-```{r}
-dat = read.csv("age_gaps.csv")
-library(tidyverse)
-
-dat$actor_1_birthdate = ymd(dat$actor_1_birthdate)
-dat$actor_2_birthdate = ymd(dat$actor_2_birthdate)
-
-dat %>% 
-filter(character_1_gender == character_2_gender)
-
-```
 
 1.  **Descriptive Statistics:**
 
     -   Calculate basic statistics such as mean, median, and standard deviation for age and age gap.
 
     -   Create histograms or box plots to visualize the distribution of ages and age gaps.
+
+```{r, message=FALSE}
+skimsummary = skim (dat)
+
+ggplot(dat, aes(x = age_difference)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Age Gap Distribution",
+       x = "Age Differe",
+       y = "Frequency") +
+  scale_x_continuous(breaks = seq(0, 55, by = 5))+
+  theme_minimal()
+  
+
+ggplot(dat_long, aes(x = age, fill = actor)) +
+  geom_histogram(binwidth = 5, position = "identity", alpha = 0.7) +
+  labs(title = "Age Distribution of Actors",
+       x = "Age",
+       y = "Frequency") +
+  theme_minimal()
+```
 
 2.  **Relationship Dynamics:**
 
@@ -92,9 +127,11 @@ filter(character_1_gender == character_2_gender)
 
     -   Examine the changes in the age gap between actors over the course of multiple movies or years.
 
-8.  **Outlier Detection:**
+8 Outline **Detection:**
 
-    -   Identify any outliers in the dataset, and explore whether these outliers have common characteristics.
+```         
+-   Identify any outliers in the dataset, and explore whether these outliers have common characteristics.
+```
 
 Here, you want to introduce the first topic you want to explore with your (newly cleaned up) data. Code to process data should be contained in chunks above this point, and those chunks should *not* be included in the report.
 
