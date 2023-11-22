@@ -60,7 +60,8 @@ glimpse(dat)
 
 dat %>%
   mutate(actor_1_birthdate = ymd(actor_1_birthdate),
-         actor_2_birthdate = ymd(actor_2_birthdate)) -> dat
+         actor_2_birthdate = ymd(actor_2_birthdate), 
+         decade = 10 * floor(release_year / 10)) -> dat
 
 dat_long <- dat %>%
   gather(key = "actor", value = "age", actor_1_age, actor_2_age)
@@ -142,6 +143,50 @@ ggplot(dat, aes(x = age_difference)) +
 Here, you want to introduce the first topic you want to explore with your (newly cleaned up) data. Code to process data should be contained in chunks above this point, and those chunks should *not* be included in the report.
 
 You can add options to executable code like this
+
+
+Questions: 
+
+1.  What is the distribution of age differences between love interests in movies?
+
+2.  Are there trends in age differences over the years?
+
+In this case, we will group the movies by release decade. 
+```{r, warning=FALSE}
+ggplot(dat, aes(x = decade, y = age_difference)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "loess", se = TRUE, color = "blue") +
+  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
+       x = "Decade",
+       y = "Age Difference") +
+  scale_x_continuous(breaks = seq(1930,2020, by = 10))+
+  theme_minimal()
+```
+It seems that the age difference does not change much over time. 
+
+3.  Which directors have the highest average age differences in their movies?
+```{r}
+dat %>%
+  group_by(director) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head(5) %>% 
+  pull(director) -> top_directors
+```
+Five directors with the highest age differnce couples in their movies are `r top_directors`. However, recognizing that many directors have only one couple in their movies, we can refine our analysis by subsetting the data to include only directors with at least three couples. Afterward, we can calculate the average age difference for this subset of directors. 
+
+```{r}
+dat %>%
+  filter(couple_number>=3) %>% 
+  group_by(director) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head (5) %>% 
+  pull(director) -> top_directors3
+```
+Top 5 directors with the highest age difference and at least 3 couples are `r top_directors3`.
+
+4.  Do trends in the relations between genders change over the year?
 
 ```{r}
 #| echo: false
