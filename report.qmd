@@ -21,7 +21,7 @@ if (!"remotes" %in% installed.packages()) {
 # This is how to do it for a package that's only on github
 if (!"emo" %in% installed.packages()) {
   remotes::install_github("hadley/emo")
-
+install.packages("plotly")
 ```
 
 ```{r}
@@ -81,38 +81,129 @@ library(ggplot2)
 
 age <- c(dat$actor_1_age, dat$actor_2_age)
 age <- as.data.frame(age)
-# Create a histogram
+summary(age)
+# Create a histogram 
 ggplot(age, aes(x=age)) +
-  geom_histogram(bins=30, position='identity', alpha=0.7, color='black') +
-  labs(title='Histogram of Actor Ages', x='Age', y='Frequency') 
-
+  geom_histogram(binwidth=1, position='identity',fill = "skyblue", alpha=0.5, color='black') +
+  labs(title='Histogram of Actor Ages', x='Age', y='Frequency') +
+  theme_minimal()
 
 
 ```
-  
+The average of the age is 35 years old, while the youngest actor is 17 and oldest one is 81 years old. 
+   
     -   Create histograms or box plots to visualize the distribution of ages and age gaps.
 
 ```{r, message=FALSE}
 ggplot(dat, aes(x = age_difference)) +
-  geom_histogram(binwidth = 5, fill = "skyblue", color = "black", alpha = 0.7) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
   labs(title = "Age Gap Distribution",
        x = "Age Differe",
        y = "Frequency") +
   scale_x_continuous(breaks = seq(0, 55, by = 5))+
   theme_minimal()
 ```
+```{r}
+# Assuming 'dat' is your data frame
+library(ggplot2)
+library(plotly)
+
+# Create ggplot object
+gg <- ggplot(dat, aes(x = age_difference)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Age Gap Distribution",
+       x = "Age Difference",
+       y = "Frequency") +
+  scale_x_continuous(breaks = seq(0, 55, by = 5)) +
+  theme_minimal()
+
+# Convert ggplot to plotly
+plotly_plot <- ggplotly(gg)
+
+# Show the interactive plot
+plotly_plot
+
+```
+Based on this graph, the age gap between actors is mostly about 2-3 years. But there are some out liars that age gap is more than 40 years! 
 
 2.  **Relationship Dynamics:**
 
     -   Explore the correlation between age and age gap. Are there trends or patterns that suggest certain age differences are more common?
+```{r}
+# Assuming 'data' is your data frame with columns 'age' and 'age_gap'
+ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
+  geom_point(alpha = 0.7, color = 'skyblue') +
+  labs(title = 'Relationship Between Age and Age Gap',
+       x = 'Actor 1 age',
+       y = 'Age Gap') +
+  theme_minimal()
+# Assuming 'data' is your data frame with columns 'age' and 'age_gap'
+ggplot(dat, aes(x = actor_2_age, y = age_difference)) +
+  geom_point(alpha = 0.7, color = 'skyblue') +
+  labs(title = 'Relationship Between Age and Age Gap',
+       x = 'Actor 2 age',
+       y = 'Age Gap') +
+  theme_minimal()
+```
 
-    -   Investigate if there's a relationship between the age of the actors and the duration of their relationships.
+This graphs are based on actor 1 age and age gap and actor 2 age and age gap. These 2 figures are kind of mirrored each other, since actor 1 in our dataset is always the older partner. 
 
 3.  **Temporal Analysis:**
 
     -   Examine if there are trends over time. For example, has there been a change in the average age gap between actors over the years?
 
-    -   Identify if certain age groups are more likely to date each other during specific periods.
+In this case, we will group the movies by release decade. 
+```{r, warning=FALSE}
+ggplot(dat, aes(x = decade, y = age_difference)) +
+  geom_point(alpha = 0.7, color = "skyblue", size = 3) +
+  geom_smooth(method = "loess", se = TRUE, color = "blue", linetype = "solid", size = 1) +
+  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
+       x = "Decade",
+       y = "Age Difference") +
+  scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
+  theme_minimal() +
+  theme(panel.grid = element_line(color = "lightgray", linetype = "dashed"))
+
+```
+This graph shows the highest age gaps are in 1990 and 2000. the overall age gap trend is more or less conctant through the decades. 
+
+
+-  Which directors have the highest average age differences in their movies?
+```{r}
+dat %>%
+  group_by(director) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head(5) %>% 
+  pull(director) -> top_directors
+top_directors
+```
+Five directors with the highest age difference couples in their movies are Hal Ashby, Katt Shea, Jon Amiel, Irving Pichel, Sofia Coppola. However, recognizing that many directors have only one couple in their movies, we can refine our analysis by sub-setting the data to include only directors with at least three couples. Afterward, we can calculate the average age difference for this subset of directors.
+
+```{r}
+dat %>%
+  filter(couple_number>=3) %>% 
+  group_by(director) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head (5) %>% 
+  pull(director) -> top_directors3
+top_directors3
+```
+Top 5 directors with the highest age difference and at least 3 couples are Guy Hamilton, Eli Roth,John Glen,Lewis Gilbert and Phillip Noyce.
+We might be curious to see what are the movies? Do they have specific theme?
+```{r}
+dat %>%
+  filter(couple_number>=3) %>% 
+  group_by(movie_name) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head (5) %>% 
+  pull(movie_name) -> movie_name
+movie_name 
+
+```
+From the names we might guess that those movies genre are more like horror. 
 
 4.  **Network Analysis:**
 
@@ -149,42 +240,10 @@ Questions:
 
 1.  What is the distribution of age differences between love interests in movies?
 
-2.  Are there trends in age differences over the years?
 
-In this case, we will group the movies by release decade. 
-```{r, warning=FALSE}
-ggplot(dat, aes(x = decade, y = age_difference)) +
-  geom_point(alpha = 0.7) +
-  geom_smooth(method = "loess", se = TRUE, color = "blue") +
-  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
-       x = "Decade",
-       y = "Age Difference") +
-  scale_x_continuous(breaks = seq(1930,2020, by = 10))+
-  theme_minimal()
-```
-It seems that the age difference does not change much over time. 
 
-3.  Which directors have the highest average age differences in their movies?
-```{r}
-dat %>%
-  group_by(director) %>%
-  summarize(mean_age_diff = mean(age_difference)) %>%
-  arrange(desc(mean_age_diff)) %>% 
-  head(5) %>% 
-  pull(director) -> top_directors
-```
-Five directors with the highest age differnce couples in their movies are `r top_directors`. However, recognizing that many directors have only one couple in their movies, we can refine our analysis by subsetting the data to include only directors with at least three couples. Afterward, we can calculate the average age difference for this subset of directors. 
+ 
 
-```{r}
-dat %>%
-  filter(couple_number>=3) %>% 
-  group_by(director) %>%
-  summarize(mean_age_diff = mean(age_difference)) %>%
-  arrange(desc(mean_age_diff)) %>% 
-  head (5) %>% 
-  pull(director) -> top_directors3
-```
-Top 5 directors with the highest age difference and at least 3 couples are `r top_directors3`.
 
 4.  Do trends in the relations between genders change over the year?
 
