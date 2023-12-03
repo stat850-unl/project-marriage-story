@@ -22,6 +22,19 @@ if (!"remotes" %in% installed.packages()) {
 if (!"emo" %in% installed.packages()) {
   remotes::install_github("hadley/emo")
 install.packages("plotly")
+
+if (!requireNamespace("igraph", quietly = TRUE)) {
+  install.packages("igraph")
+}
+library(igraph)
+
+if (!requireNamespace("viridisLite", quietly = TRUE)) {
+  install.packages("viridisLite")
+}
+if (!requireNamespace("viridis", quietly = TRUE)) {
+  install.packages("viridis")
+}
+library(viridis)
 ```
 
 ```{r}
@@ -126,6 +139,19 @@ plotly_plot
 ```
 Based on this graph, the age gap between actors is mostly about 2-3 years. But there are some out liars that age gap is more than 40 years! 
 
+# who is the most active director?
+```{r}
+# Count occurrences of each item in the 'director' column
+directors <- table(dat$director)
+
+# Show the top 10
+top_10 <- head(sort(directors, decreasing = TRUE), 10)
+
+# Display the results
+print(top_10)
+
+```
+
 2.  **Relationship Dynamics:**
 
     -   Explore the correlation between age and age gap. Are there trends or patterns that suggest certain age differences are more common?
@@ -190,8 +216,9 @@ dat %>%
   pull(director) -> top_directors3
 top_directors3
 ```
-Top 5 directors with the highest age difference and at least 3 couples are Guy Hamilton, Eli Roth,John Glen,Lewis Gilbert and Phillip Noyce.
-We might be curious to see what are the movies? Do they have specific theme?
+##  5 directors with the highest age difference and at least 3 couples are Guy Hamilton, Eli Roth,John Glen,Lewis Gilbert and Phillip Noyce.
+
+# We might be curious to see what are the movies? Do they have specific theme?
 ```{r}
 dat %>%
   filter(couple_number>=3) %>% 
@@ -205,9 +232,81 @@ movie_name
 ```
 From the names we might guess that those movies genre are more like horror. 
 
+
 4.  **Network Analysis:**
 
     -   Construct a network graph representing relationships between actors. Analyze the network structure, identifying key actors who are connected to many others.
+```{r}
+# Filter the DataFrame for a specific director
+director_name <- "Woody Allen"
+filtered_data <- dat[dat$director == director_name, ]
+
+# Create a network graph
+graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
+
+par(mfrow=c(1,1), mar = c(0,0,0,0))
+#Choose a layout algorithm (e.g., "fruchterman-reingold")
+layout <- layout_with_kk(graph)
+
+color_gradient <- viridisLite::viridis(100, option = "plasma")
+
+# Map age difference to colors
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 100, labels = FALSE)]
+
+# Plot the network graph with adjusted parameters, layout, and color mapping
+plot(graph, 
+     main = paste("Actor Network for Director:", director_name), 
+     edge.arrow.size = 0.5,
+     vertex.size = 20,
+     vertex.label.cex = 0.8,
+     layout = layout,
+     edge.color = color_mapping
+)
+# Add legend
+legend("bottomright", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 100)), 
+       fill = color_gradient,
+       title = "Age Difference",
+       cex = 0.7)
+
+```
+I didn't know that Woody Allen played in his movie too! Also it looks like he was in the relationship. 
+
+```{r}
+# Filter the DataFrame for a specific director
+director_name <- "Guy Hamilton"
+filtered_data <- dat[dat$director == director_name, ]
+
+# Create a network graph
+graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
+
+par(mfrow=c(1,1), mar = c(0,0,0,0))
+#Choose a layout algorithm (e.g., "fruchterman-reingold")
+
+layout <- layout_with_kk(graph)
+# Create a color gradient based on age difference
+color_gradient <- viridisLite::viridis(100, option = "plasma")
+
+# Map age difference to colors
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 100, labels = FALSE)]
+
+# Plot the network graph with adjusted parameters, layout, and color mapping
+plot(graph, 
+     main = paste("Actor Network for Director:", director_name), 
+     edge.arrow.size = 0.5,
+     vertex.size = 20,
+     vertex.label.cex = 0.8,
+     layout = layout,
+     edge.color = color_mapping
+)
+# Add legend
+legend("bottomright", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 100)), 
+       fill = color_gradient,
+       title = "Age Difference",
+       cex = 0.7)
+```
+
 
     -   Explore whether certain actors tend to form relationships with a specific age group.
 
