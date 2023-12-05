@@ -1,6 +1,6 @@
 ---
-title: "Stat 850 Project"
-author: "Firstname Lastname, Firstname Lastname, ..."
+title: "Stat 850 Project: Marriage story"
+author: "Mahsa Mohammadi, Luka Milosevic"
 format: md
 ---
 
