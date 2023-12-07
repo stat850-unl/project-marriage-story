@@ -1,7 +1,7 @@
 ---
 format: html
 editor: visual
-author: Mahsa Mohammadi, Luka Milosevic
+authors: Mahsa Mohammadi, Luka Milosevic
 ---
 
 ```{r, eval = F}
