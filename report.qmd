@@ -417,6 +417,7 @@ Further investigations into directors with the highest age differences and those
 
 This project contributes a new perspective to the understanding of age dynamics in cinematic love stories, emphasizing key contextual, gender-related, and temporal influences on on-screen relationships.
 
+
 # References
 
 1.  Wickham H, Averick M, Bryan J, Chang W, McGowan L, François R, et al. Welcome to the tidyverse. J Open Source Softw. 2019 Nov 21;4(43):1686.
@@ -426,19 +427,3 @@ This project contributes a new perspective to the understanding of age dynamics 
 5.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4679423, viridis package version 0.6.4.
 6.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4678327, viridisLite package version 0.4.2.
 7.  Waring E, Quinn M, McNamara A, Arino de la Rubia E, Zhu H, Ellis S. *skimr: Compact and Flexible Summaries of Data.* 2023. R package version 2.1.5. <https://github.com/ropensci/skimr/>. Available from: <https://docs.ropensci.org/skimr/> (website).
-
-## Tips
-
-(delete this section from your report!)
-
-Almost anything you might want to know about how to format output in quarto can be found [here](https://quarto.org/docs/authoring/markdown-basics.html). Feel free to email/come to office hours to figure out how to do XYZ - part of the goal of making you write this report is that I want you to know how to write e.g. a journal paper in Quarto as well, so now's the time to experiment.
-
-If you want to know what the wordcount of your report is, you can run the following command in your terminal:
-
-```         
-pandoc --lua-filter wordcount.lua report.qmd
-```
-
-Notice that I have not pushed `_output/report.html` or the `_output/report_files/` folder to github - this is intentional. I have actually set `_output` to not show up in git, to encourage you all to NOT push the rendered files to github and to instead work from the markdown files directly.
-
-You may find it cleaner to create a figure subdirectory and store any figures that aren't created by R/Python in that folder. I encourage you to organize this repository in a sensible way.
