@@ -1,7 +1,8 @@
 ---
 format: html
 editor: visual
-author: Mahsa Mohammadi, Luka Milosevic
+title: Marriage story
+authors: Mahsa Mohammadi, Luka Milosevic
 ---
 
 ```{r, eval = F}
@@ -42,22 +43,27 @@ if (!requireNamespace("skimr", quietly = TRUE)) {
   install.packages("skimr")
 }
 library(skimr)
-
 ```
 
 # Introduction
 
 The dataset, sourced from [Hollywood age gap site](https://hollywoodagegap.com/), provides information on movies and the age gaps between the love interests portrayed by actors. The variables include movie name, movie release year, director, age difference, number of couples, names and of the actors involved in romance, their birth dates and age, as well as the gender of character they are portraying in the movie. Given its primary focus on significant age differences between actors portraying characters in love, the dataset does not exhibit anomalies. It is designed to highlight and analyze substantial variations in age within the context of romantic relationships depicted in films.
 
-The unique aspect of this dataset is its focus on age gaps in romantic relationships within movies. The dataset is curated based on specific rules, ensuring that the actors portrayed actual love interests, with the youngest being at least 17 years old. Additionally, the dataset excludes animated characters, emphasizing real-life portrayals of romantic relationships in films.
+The unique aspect of this dataset is its focus on age gaps in romantic relationships within movies. The dataset is curated based on specific rules, ensuring that the actors portrayed actual love interests, with the youngest being at least 17 years old. Additionally, it excludes animated characters, emphasizing real-life portrayals of romantic relationships in films.
 
 # Methods
 
-We utilized the tidyverse package, specifically relaying on the functionalities of the `dplyr` and `lubridate` packages for effective data manipulation. Tidyverse is a comprehensive suite designed to streamline data analysis and visualization workflows. Within this framework, dplyr provides versatile tools for data manipulation tasks.
+We utilized the tidyverse package, specifically relaying on the functionality of the `dplyr` and `lubridate` packages for effective data manipulation. Tidyverse is a comprehensive suite designed to streamline data analysis and visualization workflows. Within this framework, dplyr provides versatile tools for data manipulation tasks.
 
 Our dataset was already organized by the principles of tidy data, which advocates for a standardized organization of datasets. This organizational structure involves arranging variables in columns, observations in rows, and maintaining a singular observational unit in each table. The structured format of our data minimized the need for extensive manipulation.
 
-The `dplyr` package's `mutate` function played a central role in our data manipulation process. This function facilitated the creation and modification of variables within the dataset, enabling the seamless introduction of calculated columns tailored to our analytical needs. Combined with `ymd` function from `lubridate` package, we have successfully ensured the transformation of the birth date variable into a standardized Date type within the dataset. Additionaly, we emplyed `skim` fucntion from `skimr` package to derive a simple overveiw of the data.
+The `dplyr` package's `mutate` function played a central role in our data manipulation process. This function facilitated the creation and modification of variables within the dataset, enabling the seamless introduction of calculated columns tailored to our analytical needs. Combined with `ymd` function from `lubridate` package, we have successfully ensured the transformation of the birth date variable into a standardized Date type within the dataset. Additionally, we employed `skim` function from `skimr` package to derive a simple overview of the data.
+
+In the gender gap analysis, age differences within the dataset were explored, specifically examining scenarios where the older actor was male compared to female. T-test was utilized to systematically assess whether significant distinctions existed in age based on the gender of the older actor. This analysis provided insights into potential age-related disparities within the dataset.
+
+Additionally, age differences were investigated across decades of movie release year using the `loess` regression model. This approach facilitated the identification of trends and patterns in age discrepancies over time. The use of loess regression allowed for the visualization of potential nonlinearities or trends not immediately apparent through simpler analyses.
+
+To further understand the relationship between the age of older actors and age differences across decades, a linear model was utilized. This analytical tool quantified and described the nature of this relationship, providing a comprehensive perspective on how age differences varied with the older actor's age within each decade.
 
 ```{r, results = 'hide'}
 #| echo: false
@@ -76,16 +82,16 @@ dat_long <- dat %>%
   gather(key = "actor", value = "age", actor_1_age, actor_2_age)
 ```
 
-# Topic of Exploration
+# Topics of Exploration
 
-##  Descriptive Statistics:
+## Descriptive Statistics:
 
--   Calculate basic statistics such as mean, median, and standard deviation for age and age gap.
-    
+-   Basic statistical information for age and age gap:
+
 ```{r, results = 'hide'}
     skimsummary = skim (dat)
     summary(dat)
-```    
+```
 
 The dataset contains 1,155 entries, with movies spanning from 1935 to 2022. The average age difference between actors is 10.42 years, with a minimum of 0 years and a maximum of 52 years. The dataset features up to 7 couples per movie, with a mean of 1.398 couples. The actors' birthdates indicate a range from 1889 to 1996, and the average age of actor 1 is 40.64 years, while actor 2 has an average age of 30.21 years. The dataset covers movies released in different decades, with a mean release year of 2001. Overall, these statistics provide a comprehensive overview of the age dynamics, release timelines, and other characteristics within the movie dataset.
 
@@ -93,68 +99,72 @@ The dataset contains 1,155 entries, with movies spanning from 1935 to 2022. The 
 age <- c(dat$actor_1_age, dat$actor_2_age)
 age <- as.data.frame(age)
 
-# Create a histogram 
 ggplot(age, aes(x=age)) +
-  geom_histogram(binwidth=1, position='identity',fill = "skyblue", alpha=0.5, color='black') +
-  labs(title='Histogram of Actor Ages', x='Age', y='Frequency') +
-  theme_minimal()
+  geom_histogram(binwidth=1, position='identity', fill='skyblue', alpha=0.5, color='black') +
+  labs(title='Histogram of actors ages', x='Age', y='Frequency') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 The average of the age is 35 years old, while the youngest actor is 17 and oldest one is 81 years old.
 
--   Create histograms or box plots to visualize the distribution of ages and age gaps.
+-   Histogram of the distribution of ages and age gaps:
 
 ```{r}
 library(plotly)
 
 gg <- ggplot(dat, aes(x = age_difference)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-  labs(title = "Age Gap Distribution",
-       x = "Age Difference",
+  labs(title = "Age gap distribution",
+       x = "Age difference",
        y = "Frequency") +
   scale_x_continuous(breaks = seq(0, 55, by = 5)) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
 plotly_plot <- ggplotly(gg)
 
 plotly_plot
 ```
 
-Based on this graph, the age gap between actors is mostly about 2-3 years. But there are some out liars that age gap is more than 40 years!
+Based on this graph, the age gap between actors is mostly about 2-3 years. But there are some outliars that age gap is more than 40 years!
 
-##  Relationship Dynamics:
+## Relationship Dynamics:
 
--   Explore the correlation between age and age gap. Are there trends or patterns that suggest certain age differences are more common?
+-   Is there any correlation between age and age gap?
+-   Are there trends or patterns that suggest certain age differences are more common?
 
 ```{r}
     ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
       geom_point(alpha = 0.7, color = 'skyblue') +
-      labs(title = 'Relationship Between Age and Age Gap',
+      labs(title = 'Relationship between age and age gap',
            x = 'Actor 1 age',
            y = 'Age Gap') +
-      theme_minimal()
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
 
     ggplot(dat, aes(x = actor_2_age, y = age_difference)) +
       geom_point(alpha = 0.7, color = 'skyblue') +
-      labs(title = 'Relationship Between Age and Age Gap',
+      labs(title = 'Relationship between age and age gap',
            x = 'Actor 2 age',
            y = 'Age Gap') +
-      theme_minimal()
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
-This graphs are based on actor 1 age and age gap and actor 2 age and age gap. These 2 figures are kind of mirrored each other, since actor 1 in our dataset is always the older partner.
+The first graph is based on actor 1 age and age gap and the second graph is based on actor 2 age and age gap. These 2 figures are kind of mirrored each other, since actor 1 in our dataset is always the older partner. The graph also validate the point that age gap between actors is mostly under 10 years.
 
-##  Temporal Analysis:
+## Temporal Analysis:
 
--   Examine if there are trends over time. For example, has there been a change in the average age gap between actors over the years?
+-   Is there any trend or change in the average age gap between actors over the years?
 
-In this case, we will group the movies by release decade.
+To address this question, we will group the movies by their released decade:
 
 ```{r, warning=FALSE}
 ggplot(dat, aes(x = decade, y = age_difference)) +
   geom_point(alpha = 0.7, color = "skyblue", size = 3) +
   geom_smooth(method = "loess", se = TRUE, color = "blue", linetype = "solid", size = 1) +
-  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
+  labs(title = "The change in age gap over decades",
        x = "Decade",
        y = "Age Difference") +
   scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
@@ -162,12 +172,11 @@ ggplot(dat, aes(x = decade, y = age_difference)) +
   theme(panel.grid = element_line(color = "lightgray", linetype = "dashed"))
 ```
 
-This graph shows the highest age gaps are in 1990 and 2000. the overall age gap trend is more or less constant through the decades.
+According to the graph, the highest age gap is present in the movies in 1940s, after which the trend is slowly descending. However, the overall age gap trend is more or less constant through the decades, with slight but probably insignficant differences. Furthermore, the number of movies from the 1930s and 1940s is less than other decades which make it hard to make a general conclusion.
 
+## Network Analysis:
 
-##  Network Analysis:
-
--   Construct a network graph representing relationships between actors. Analyze the network structure, identifying key actors who are connected to many others.
+-   Construct a network graph representing the connection between actors and their age gap for specific director or movie.
 
 ```{r}
 # Filter the DataFrame for a specific director
@@ -179,12 +188,11 @@ filtered_data <- dat[dat$director == director_name, ]
 graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
 
 # Set up plot parameters
-par(mfrow=c(1,1), mar = c(0,0,0,0))
+par(mfrow=c(1,1), mar = c(8, 4, 4, 2) + 0.1)  # Adjust the bottom margin (5) as needed
 layout <- layout_with_kk(graph)
-color_gradient <- viridisLite::viridis(100, option = "plasma")
-color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 100, labels = FALSE)]
+color_gradient <- viridisLite::viridis(40, option = "plasma")
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 40, labels = FALSE)]
 
-# Plot the network graph with adjusted parameters, layout, and color mapping
 plot(graph, 
      main = paste("Actor Network for Director:", director_name), 
      edge.arrow.size = 0.5,
@@ -193,16 +201,34 @@ plot(graph,
      layout = layout,
      edge.color = color_mapping
 )
-# Add legend
-legend("bottomright", 
-       legend = levels(cut(filtered_data$age_difference, breaks = 100)), 
+
+# Calculate the legend width based on the graph width
+legend_width <- par()$usr[2] - par()$usr[1]  # Graph width
+
+num_colors <- length(color_gradient)
+num_columns <- 5  # Adjust the number of columns as needed
+
+legend("bottom", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 40)), 
        fill = color_gradient,
        title = "Age Difference",
-       cex = 0.7)
+       cex = 0.7,
+       ncol = num_columns,  # Set the number of columns
+       xpd = TRUE,  # Allows plotting outside the plot region
+       xjust = 0.5,  # Center the legend
+       y.intersp = 1.5,  # Adjust the vertical spacing between legend entries
+       x = 0,  # Set the x position to place it below the plot
+       y = -1.5,  # Set the y position to move it below the plot
+       bty = "n")  # Remove the box around the legend
+
+# Reset the xpd parameter to its default value
+par(xpd = FALSE)
 
 ```
 
-I didn't know that Woody Allen played in his movie too! Also it looks like he was in the relationship.
+I didn't know that Woody Allen played in his movie too! Also it looks like he was most of the time in the relationship. Rather than him, Most of the other actors in his movies were only in one relationship.
+
+-   Let's look at the network of relationships for another director!
 
 ```{r}
 # Filter the DataFrame for a specific director
@@ -212,16 +238,16 @@ filtered_data <- dat[dat$director == director_name, ]
 # Create a network graph
 graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
 
-par(mfrow=c(1,1), mar = c(0,0,0,0))
+par(mfrow=c(1,1), mar = c(8, 4, 4, 2) + 0.1)  # Adjust the bottom margin (5) as needed
 
 #Choose a layout algorithm
 
 layout <- layout_with_kk(graph)
 # Create a color gradient based on age difference
-color_gradient <- viridisLite::viridis(100, option = "plasma")
+color_gradient <- viridisLite::viridis(40, option = "plasma")
 
 # Map age difference to colors
-color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 100, labels = FALSE)]
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 40, labels = FALSE)]
 
 # Plot the network graph with adjusted parameters, layout, and color mapping
 plot(graph, 
@@ -233,16 +259,32 @@ plot(graph,
      edge.color = color_mapping
 )
 # Add legend
-legend("bottomright", 
-       legend = levels(cut(filtered_data$age_difference, breaks = 100)), 
+num_colors <- length(color_gradient)
+num_columns <- 5  # Adjust the number of columns as needed
+
+# Add legend with multiple columns
+legend("bottom", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 40)), 
        fill = color_gradient,
        title = "Age Difference",
-       cex = 0.7)
+       cex = 0.7,
+       ncol = num_columns,  # Set the number of columns
+       xpd = TRUE,  # Allows plotting outside the plot region
+       xjust = 0.5,  # Center the legend
+       y.intersp = 1.5,  # Adjust the vertical spacing between legend entries
+       x = 0,  # Set the x position to place it below the plot
+       y = -1.5,  # Set the y position to move it below the plot
+       bty = "n")  # Remove the box around the legend
+
+# Reset the xpd parameter to its default value
+par(xpd = FALSE)
 ```
 
-##  Gender Analysis:
+Guy Hamilton's network of the relationships between his actors looks different. They actors created 2 clusters and Roger Moore and Sean Connery are the two center of those clusters with degree of centrality 5 and 3.
 
--   Analyze if there are gender-based differences in age gaps.
+## Gender Analysis:
+
+-   Is there any gender-based differences in age gaps?
 
 ```{r}
     gender_age_diff = dat %>% 
@@ -259,9 +301,9 @@ legend("bottomright",
 
 The analysis indicates a significant difference in age gaps between male and female characters. For example, the average age gap when the male character is older is `r round(man_age_diff$mean_age_diff_gender, 1)` years, while in cases when the female character is older, the average age difference is `r round(woman_age_diff$mean_age_diff_gender, 1)` years. After performing the t-test, we can conclude that this difference is highlight significant (p\>0.0001).
 
-##  Regression Analysis:
+## Regression Analysis:
 
--   Build regression models to predict age gap based on various factors such as the age of older actor and movie release year.
+-   Let's do regression analysis to see if we can find effective variables on predicting the age gap?
 
 ```{r, results='hide'}
 model <- lm(age_difference ~ actor_1_age + decade, data = dat)
@@ -269,24 +311,53 @@ summary(model)
 ```
 
 ```{r}
-ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
+reg.plot = ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
   geom_point(color="skyblue") +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(title = "Prediction of the Age difference based on Older Actor Age through decades",
        x = "Older actor Age",
        y = "Age Difference") +
   facet_wrap(~decade) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+print(reg.plot)
+
+
+
+models <- lm(age_difference ~ actor_1_age, data = dat)
+
+
+results_tibble <- tibble()
+
+# Iterate over each unique decade
+for (d in unique(dat$decade)) {
+  # Fit a linear model for the current decade
+  model <- lm(age_difference ~ actor_1_age, data = subset(dat, decade == d))
+  
+  # Extract coefficients and add a column for the decade
+  coefficients <- data.frame(
+    decade = d,
+    summary(model)$coefficients[1, 1],
+    summary(model)$coefficients[2, 1]
+  )
+  
+  # Combine the results into the tibble
+  results_tibble <- bind_rows(results_tibble, as_tibble(coefficients))
+}
+
+# Rename the columns for better clarity
+colnames(results_tibble) <- c("decade", "Intercept", "slope")
+
+# Print the resulting tibble
+results_tibble = results_tibble %>% 
+  arrange(desc(slope))
 ```
 
-
-Then, you can reference @fig-iris in the text and the appropriate cross-reference will be generated.
-
-You can find additional information about formatting figures generated from code in the [quarto documentation](https://quarto.org/docs/authoring/figures.html#computations).
+The linear model estimates reveal distinctive slopes representing the rate of change in age differences per unit increase in the older actor's age across different decades. Notably, the 1940s, 1970s, and 1950s exhibit steeper slopes (1.13, 1.04, and 0.871, respectively), indicating a more pronounced increase in age differences with advancing older actor ages. In contrast, the 1960s and 2020s present comparatively shallower slopes (0.438 and 0.412, respectively), suggesting a potential attenuation in the rate of increase in age differences during these decades.
 
 # Additional Exploration topic
 
-1.   Which directors have the highest average age differences in their movies?
+-   Which directors have the highest average age differences in their movies?
 
 ```{r}
 dat %>%
@@ -311,8 +382,7 @@ dat %>%
 
 Top 5 directors with the highest age difference and at least 3 couples are `r top_directors3`.
 
-
-2.  We might be curious to see what are the movies? Do they have specific theme?
+-   We might be curious to see what are the movies? Do they have specific theme?
 
 ```{r}
 dat %>%
@@ -326,7 +396,7 @@ dat %>%
 
 Based on the fact that 3 out of 5 movies with the most couples (`r movie_name`) are about the most famous MI6 agent with the licence to kill, we can conclude that James Bond is the Casanova of 20^th^ century.
 
-3.  Who is the most active director?
+-   Who is the most active director?
 
 ```{r}
 directors <- table(dat$director)
@@ -339,7 +409,23 @@ The most active directors are `r top_10$Var1`.
 
 # Conclusion
 
-Here, you want to summarize the main points of what you've learned from this investigation, in paragraph form.
+In conclusion, our analysis of age disparities in cinematic romantic relationships provides valuable insights into the detailed portrayal of such dynamics.
+
+Exploring relationship dynamics and conducting gender-based analyses uncovered significant differences in age gaps between male and female characters. Regression analysis across decades revealed varying trends, with steeper slopes in the 1940s, 1970s, and 1950s, indicating heightened age differences with older actors.
+
+Further investigations into directors with the highest age differences and those consistently portraying such relationships offered additional context. Notably, James Bond movies emerged as movies with the highest number of portrayed romantic relationships.
+
+This project contributes a new perspective to the understanding of age dynamics in cinematic love stories, emphasizing key contextual, gender-related, and temporal influences on on-screen relationships.
+
+# References
+
+1.  Wickham H, Averick M, Bryan J, Chang W, McGowan L, François R, et al. Welcome to the tidyverse. J Open Source Softw. 2019 Nov 21;4(43):1686.
+2.  Appelhans T, Detsch F, Nauss T. remote: Empirical Orthogonal Teleconnections in R \[Internet\]. Vol. 65, Journal of Statistical Software. 2015. p. 1--19. Available from: <https://www.jstatsoft.org/article/view/v065i10>
+3.  Sievert C. Interactive Web-Based Data Visualization with R, plotly, and shiny \[Internet\]. Chapman and Hall/CRC; 2020. Available from: <https://plotly-r.com>
+4.  Csardi G, Nepusz T. The igraph software package for complex network research \[Internet\]. Vol. Complex Systems, InterJournal. 2006. p. 1695. Available from: <https://igraph.org>
+5.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4679423, viridis package version 0.6.4.
+6.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4678327, viridisLite package version 0.4.2.
+7.  Waring E, Quinn M, McNamara A, Arino de la Rubia E, Zhu H, Ellis S. *skimr: Compact and Flexible Summaries of Data.* 2023. R package version 2.1.5. <https://github.com/ropensci/skimr/>. Available from: <https://docs.ropensci.org/skimr/> (website).
 
 ## Tips
 
