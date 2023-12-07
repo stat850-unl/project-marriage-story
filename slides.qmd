@@ -20,11 +20,8 @@ dat = read.csv("age_gaps.csv")
 colnames(dat)
 ```
 
-## Descriptive Statistics
 
----
-
-## ) Basic statistical information for age and age gap
+## General statistics
 
 ```{r}
 library(ggplot2)
@@ -37,3 +34,183 @@ ggplot(age, aes(x=age)) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5)) 
 ```
+```{r}
+library(plotly)
+
+gg <- ggplot(dat, aes(x = age_difference)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Age gap distribution",
+       x = "Age difference",
+       y = "Frequency") +
+  scale_x_continuous(breaks = seq(0, 55, by = 5)) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+plotly_plot <- ggplotly(gg)
+
+plotly_plot
+```
+
+## Correlation between age and age gap
+
+```{r}
+    ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
+      geom_point(alpha = 0.7, color = 'skyblue') +
+      labs(title = 'Relationship between age and age gap',
+           x = 'Actor 1 age',
+           y = 'Age Gap') +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
+
+    ggplot(dat, aes(x = actor_2_age, y = age_difference)) +
+      geom_point(alpha = 0.7, color = 'skyblue') +
+      labs(title = 'Relationship between age and age gap',
+           x = 'Actor 2 age',
+           y = 'Age Gap') +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Trend of the age gap over the years
+
+```{r}
+ggplot(dat, aes(x = decade, y = age_difference)) +
+  geom_point(alpha = 0.7, color = "skyblue", size = 3) +
+  geom_smooth(method = "loess", se = TRUE, color = "blue", linetype = "solid", size = 1) +
+  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
+       x = "Decade",
+       y = "Age Difference") +
+  scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
+  theme_minimal() +
+  theme(panel.grid = element_line(color = "lightgray", linetype = "dashed"))
+```
+
+## Network analysis of the specific directors
+```{r}
+# Filter the DataFrame for a specific director
+library(igraph)
+director_name <- "Woody Allen"
+filtered_data <- dat[dat$director == director_name, ]
+
+# Create a network graph
+graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
+
+# Set up plot parameters
+par(mfrow=c(1,1), mar = c(8, 4, 4, 2) + 0.1)  # Adjust the bottom margin (5) as needed
+layout <- layout_with_kk(graph)
+color_gradient <- viridisLite::viridis(40, option = "plasma")
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 40, labels = FALSE)]
+
+plot(graph, 
+     main = paste("Actor Network for Director:", director_name), 
+     edge.arrow.size = 0.5,
+     vertex.size = 20,
+     vertex.label.cex = 0.8,
+     layout = layout,
+     edge.color = color_mapping
+)
+
+# Calculate the legend width based on the graph width
+legend_width <- par()$usr[2] - par()$usr[1]  # Graph width
+
+num_colors <- length(color_gradient)
+num_columns <- 5  # Adjust the number of columns as needed
+
+legend("bottom", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 40)), 
+       fill = color_gradient,
+       title = "Age Difference",
+       cex = 0.7,
+       ncol = num_columns,  # Set the number of columns
+       xpd = TRUE,  # Allows plotting outside the plot region
+       xjust = 0.5,  # Center the legend
+       y.intersp = 1.5,  # Adjust the vertical spacing between legend entries
+       x = 0,  # Set the x position to place it below the plot
+       y = -1.5,  # Set the y position to move it below the plot
+       bty = "n")  # Remove the box around the legend
+
+# Reset the xpd parameter to its default value
+par(xpd = FALSE)
+
+```
+
+## Network analysis of the specific directors
+
+```{r}
+# Filter the DataFrame for a specific director
+director_name <- "Guy Hamilton"
+filtered_data <- dat[dat$director == director_name, ]
+
+# Create a network graph
+graph <- graph.data.frame(filtered_data[, c("actor_1_name", "actor_2_name")], directed = FALSE)
+
+par(mfrow=c(1,1), mar = c(8, 4, 4, 2) + 0.1)  # Adjust the bottom margin (5) as needed
+
+#Choose a layout algorithm
+
+layout <- layout_with_kk(graph)
+# Create a color gradient based on age difference
+color_gradient <- viridisLite::viridis(40, option = "plasma")
+
+# Map age difference to colors
+color_mapping <- color_gradient[cut(filtered_data$age_difference, breaks = 40, labels = FALSE)]
+
+# Plot the network graph with adjusted parameters, layout, and color mapping
+plot(graph, 
+     main = paste("Actor Network for Director:", director_name), 
+     edge.arrow.size = 0.5,
+     vertex.size = 20,
+     vertex.label.cex = 0.8,
+     layout = layout,
+     edge.color = color_mapping
+)
+# Add legend
+num_colors <- length(color_gradient)
+num_columns <- 5  # Adjust the number of columns as needed
+
+# Add legend with multiple columns
+legend("bottom", 
+       legend = levels(cut(filtered_data$age_difference, breaks = 40)), 
+       fill = color_gradient,
+       title = "Age Difference",
+       cex = 0.7,
+       ncol = num_columns,  # Set the number of columns
+       xpd = TRUE,  # Allows plotting outside the plot region
+       xjust = 0.5,  # Center the legend
+       y.intersp = 1.5,  # Adjust the vertical spacing between legend entries
+       x = 0,  # Set the x position to place it below the plot
+       y = -1.5,  # Set the y position to move it below the plot
+       bty = "n")  # Remove the box around the legend
+
+# Reset the xpd parameter to its default value
+par(xpd = FALSE)
+```
+
+## Gender analysis 
+
+```{r}
+
+```
+
+
+## Regression analysis
+
+```{r}
+model <- lm(age_difference ~ actor_1_age + decade, data = dat)
+summary(model)
+ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
+  geom_point(color="skyblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Prediction of the Age difference based on Older Actor Age through decades",
+       x = "Older actor Age",
+       y = "Age Difference") +
+  facet_wrap(~decade) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Extra investigation about directors
+
+
+
+## Conclusion
