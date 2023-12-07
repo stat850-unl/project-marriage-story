@@ -20,10 +20,20 @@ dat = read.csv("age_gaps.csv")
 colnames(dat)
 ```
 
-## Code
+## Descriptive Statistics
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+---
+
+## ) Basic statistical information for age and age gap
 
 ```{r}
-1 + 1
+library(ggplot2)
+age <- c(dat$actor_1_age, dat$actor_2_age)
+age <- as.data.frame(age)
+
+ggplot(age, aes(x=age)) +
+  geom_histogram(binwidth=1, position='identity', fill='skyblue', alpha=0.5, color='black') +
+  labs(title='Histogram of actors ages', x='Age', y='Frequency') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
