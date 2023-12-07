@@ -11,7 +11,7 @@ format:
 editor: visual
 ---
 
-## Hollywood age gap
+## Data overview
 
 -   Hollywood age gap data - differences in age between movie characters sharing a romantic relationship
 
@@ -20,10 +20,24 @@ dat = read.csv("age_gaps.csv")
 colnames(dat)
 ```
 
-
+## Age distribution 
 
 ```{r}
+library(ggplot2)
+age <- c(dat$actor_1_age, dat$actor_2_age)
+age <- as.data.frame(age)
+
+ggplot(age, aes(x=age)) +
+  geom_histogram(binwidth=1, position='identity', fill='skyblue', alpha=0.5, color='black') +
+  labs(title='Histogram of actors ages', x='Age', y='Frequency') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Age gap distribution 
+```{r}
 library(plotly)
+
 
 gg <- ggplot(dat, aes(x = age_difference)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
@@ -49,14 +63,6 @@ plotly_plot
            y = 'Age Gap') +
       theme_minimal() +
       theme(plot.title = element_text(hjust = 0.5)) 
-
-    ggplot(dat, aes(x = actor_2_age, y = age_difference)) +
-      geom_point(alpha = 0.7, color = 'skyblue') +
-      labs(title = 'Relationship between age and age gap',
-           x = 'Actor 2 age',
-           y = 'Age Gap') +
-      theme_minimal() +
-      theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 ## Trend of the age gap over the years
@@ -66,8 +72,6 @@ plotly_plot
 dat = read.csv("age_gaps.csv")
 library(tidyverse)
 library(skimr)
-
-glimpse(dat)
 
 dat %>%
   mutate(actor_1_birthdate = ymd(actor_1_birthdate),
@@ -89,6 +93,7 @@ ggplot(dat, aes(x = decade, y = age_difference)) +
 ```
 
 ## Network analysis of the specific directors
+
 ```{r}
 # Filter the DataFrame for a specific director
 library(igraph)
@@ -189,18 +194,41 @@ legend("bottom",
 par(xpd = FALSE)
 ```
 
-## Gender analysis 
+## Gender analysis
 
 ```{r}
+gender_age_diff = dat %>% 
+       group_by(character_1_gender) %>%
+       summarise(mean_age_diff_gender = mean(age_difference))
+    man_age_diff = gender_age_diff %>% 
+      filter(character_1_gender == "man") 
+    woman_age_diff = gender_age_diff %>% 
+      filter(character_1_gender =="woman")
 
+    t_test_result = t.test(age_difference ~ character_1_gender, data = dat)
+    p.value=t_test_result$p.value
+   
+    result_object <- list(
+  statistics = c(
+    t_value = t_test_result$statistic,
+    degrees_of_freedom = t_test_result$parameter,
+    p_value = t_test_result$p.value
+  ),
+  means = c(
+    mean_group_man = t_test_result$estimate[1],
+    mean_group_woman = t_test_result$estimate[2]
+  )
+)
+
+# Print or use the result_object
+print(result_object)
 ```
-
 
 ## Regression analysis
 
 ```{r}
 model <- lm(age_difference ~ actor_1_age + decade, data = dat)
-summary(model)
+
 ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
   geom_point(color="skyblue") +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
@@ -213,7 +241,47 @@ ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
 ```
 
 ## Extra investigation about directors
+-   Directors with the most number of movies 
+```{r}
+directors <- table(dat$director)
 
+top_10 <- head(sort(directors, decreasing = TRUE), 10)
+top_10=as.data.frame(top_10)
+top_10
+```
+-   Directors with the number of couples at least 3 and and highest age difference
 
+```{r}
+dat %>%
+  filter(couple_number>=3) %>% 
+  group_by(director) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head (5) %>% 
+  pull(director) -> top_directors3
+  top_directors3
+```
+
+## Movies with the highest number of couples 
+
+```{r}
+
+dat %>%
+  filter(couple_number>=3) %>% 
+  group_by(movie_name) %>%
+  summarize(mean_age_diff = mean(age_difference)) %>%
+  arrange(desc(mean_age_diff)) %>% 
+  head (5) %>% 
+  pull(movie_name) -> movie_name
+  movie_name
+```
+
+-   James Bond movies 
 
 ## Conclusion
+
+- Significant difference between male and female actors in age difference (when one gender is older)
+
+- Age difference tends to increase more with age in the 1940s 
+
+- James Bond movies feature the highest number of couples (3 out of top 5)
