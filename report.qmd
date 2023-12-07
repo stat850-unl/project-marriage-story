@@ -1,6 +1,7 @@
 ---
 format: html
 editor: visual
+title: Marriage story
 authors: Mahsa Mohammadi, Luka Milosevic
 ---
 
@@ -93,11 +94,11 @@ The dataset contains 1,155 entries, with movies spanning from 1935 to 2022. The 
 age <- c(dat$actor_1_age, dat$actor_2_age)
 age <- as.data.frame(age)
 
-# Create a histogram 
 ggplot(age, aes(x=age)) +
-  geom_histogram(binwidth=1, position='identity',fill = "skyblue", alpha=0.5, color='black') +
-  labs(title='Histogram of Actor Ages', x='Age', y='Frequency') +
-  theme_minimal()
+  geom_histogram(binwidth=1, position='identity', fill='skyblue', alpha=0.5, color='black') +
+  labs(title='Histogram of actors ages', x='Age', y='Frequency') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 The average of the age is 35 years old, while the youngest actor is 17 and oldest one is 81 years old.
@@ -109,11 +110,12 @@ library(plotly)
 
 gg <- ggplot(dat, aes(x = age_difference)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-  labs(title = "Age Gap Distribution",
-       x = "Age Difference",
+  labs(title = "Age gap distribution",
+       x = "Age difference",
        y = "Frequency") +
   scale_x_continuous(breaks = seq(0, 55, by = 5)) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
 plotly_plot <- ggplotly(gg)
 
@@ -130,17 +132,19 @@ Based on this graph, the age gap between actors is mostly about 2-3 years. But t
 ```{r}
     ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
       geom_point(alpha = 0.7, color = 'skyblue') +
-      labs(title = 'Relationship Between Age and Age Gap',
+      labs(title = 'Relationship between age and age gap',
            x = 'Actor 1 age',
            y = 'Age Gap') +
-      theme_minimal()
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
 
     ggplot(dat, aes(x = actor_2_age, y = age_difference)) +
       geom_point(alpha = 0.7, color = 'skyblue') +
-      labs(title = 'Relationship Between Age and Age Gap',
+      labs(title = 'Relationship between age and age gap',
            x = 'Actor 2 age',
            y = 'Age Gap') +
-      theme_minimal()
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 The first graph is based on actor 1 age and age gap and the second graph is based on actor 2 age and age gap. These 2 figures are kind of mirrored each other, since actor 1 in our dataset is always the older partner. The graph also validate the point that age gap between actors is mostly under 10 years.
@@ -309,7 +313,8 @@ ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
        x = "Older actor Age",
        y = "Age Difference") +
   facet_wrap(~decade) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Then, you can reference @fig-iris in the text and the appropriate cross-reference will be generated.
