@@ -1,17 +1,24 @@
 ---
-format: revealjs
+title: "Hollywood age gap"
+author: "Mahsa Mohammadi, Luka Milosevic"
+format: 
+  revealjs:
+    code-overflow: wrap
+    chalkboard: true
+    theme: [solarized]
+    code-tools: true
+    transition: fade
+editor: visual
 ---
 
-## Quarto
+## Hollywood age gap
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+-   Hollywood age gap data - differences in age between movie characters sharing a romantic relationship
 
-## Bullets
-
-When you click the **Render** button a document will be generated that includes:
-
--   Content authored with markdown
--   Output from executable code
+```{r}
+dat = read.csv("age_gaps.csv")
+colnames(dat)
+```
 
 ## Code
 
@@ -20,5 +27,3 @@ When you click the **Render** button a presentation will be generated that inclu
 ```{r}
 1 + 1
 ```
-
-
