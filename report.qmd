@@ -43,14 +43,13 @@ if (!requireNamespace("skimr", quietly = TRUE)) {
   install.packages("skimr")
 }
 library(skimr)
-
 ```
 
 # Introduction
 
 The dataset, sourced from [Hollywood age gap site](https://hollywoodagegap.com/), provides information on movies and the age gaps between the love interests portrayed by actors. The variables include movie name, movie release year, director, age difference, number of couples, names and of the actors involved in romance, their birth dates and age, as well as the gender of character they are portraying in the movie. Given its primary focus on significant age differences between actors portraying characters in love, the dataset does not exhibit anomalies. It is designed to highlight and analyze substantial variations in age within the context of romantic relationships depicted in films.
 
-The unique aspect of this dataset is its focus on age gaps in romantic relationships within movies. The dataset is curated based on specific rules, ensuring that the actors portrayed actual love interests, with the youngest being at least 17 years old. Additionally, the dataset excludes animated characters, emphasizing real-life portrayals of romantic relationships in films.
+The unique aspect of this dataset is its focus on age gaps in romantic relationships within movies. The dataset is curated based on specific rules, ensuring that the actors portrayed actual love interests, with the youngest being at least 17 years old. Additionally, it excludes animated characters, emphasizing real-life portrayals of romantic relationships in films.
 
 # Methods
 
@@ -59,6 +58,12 @@ We utilized the tidyverse package, specifically relaying on the functionality of
 Our dataset was already organized by the principles of tidy data, which advocates for a standardized organization of datasets. This organizational structure involves arranging variables in columns, observations in rows, and maintaining a singular observational unit in each table. The structured format of our data minimized the need for extensive manipulation.
 
 The `dplyr` package's `mutate` function played a central role in our data manipulation process. This function facilitated the creation and modification of variables within the dataset, enabling the seamless introduction of calculated columns tailored to our analytical needs. Combined with `ymd` function from `lubridate` package, we have successfully ensured the transformation of the birth date variable into a standardized Date type within the dataset. Additionally, we employed `skim` function from `skimr` package to derive a simple overview of the data.
+
+In the gender gap analysis, age differences within the dataset were explored, specifically examining scenarios where the older actor was male compared to female. `T-test` was utilized to systematically assess whether significant distinctions existed in age based on the gender of the older actor. This analysis provided insights into potential age-related disparities within the dataset.
+
+Additionally, age differences were investigated across decades of movie release year using the `loess` regression model. This approach facilitated the identification of trends and patterns in age discrepancies over time. The use of loess regression allowed for the visualization of potential nonlinearities or trends not immediately apparent through simpler analyses.
+
+To further understand the relationship between the age of older actors and age differences across decades, a `linear model` was utilized. This analytical tool quantified and described the nature of this relationship, providing a comprehensive perspective on how age differences varied with the older actor's age within each decade.
 
 ```{r, results = 'hide'}
 #| echo: false
@@ -159,7 +164,7 @@ To address this question, we will group the movies by their released decade:
 ggplot(dat, aes(x = decade, y = age_difference)) +
   geom_point(alpha = 0.7, color = "skyblue", size = 3) +
   geom_smooth(method = "loess", se = TRUE, color = "blue", linetype = "solid", size = 1) +
-  labs(title = "Scatter Plot of Decade vs. Age Difference with Smoothed Line",
+  labs(title = "The change in age gap over decades",
        x = "Decade",
        y = "Age Difference") +
   scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
@@ -167,7 +172,7 @@ ggplot(dat, aes(x = decade, y = age_difference)) +
   theme(panel.grid = element_line(color = "lightgray", linetype = "dashed"))
 ```
 
-This graph shows the highest age gaps are in 1990 and 2000. However, the overall age gap trend is more or less constant through the decades. Also our information from the 1930s and 1940s is less than other decades which make it hard to make a general conclusion.
+According to the graph, the highest age gap is present in the movies in 1940s, after which the trend is slowly descending. However, the overall age gap trend is more or less constant through the decades, with slight but probably insignficant differences. Furthermore, the number of movies from the 1930s and 1940s is less than other decades which make it hard to make a general conclusion.
 
 ## Network Analysis:
 
@@ -306,7 +311,7 @@ summary(model)
 ```
 
 ```{r}
-ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
+reg.plot = ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
   geom_point(color="skyblue") +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(title = "Prediction of the Age difference based on Older Actor Age through decades",
@@ -315,11 +320,40 @@ ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
   facet_wrap(~decade) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
+print(reg.plot)
+
+
+
+models <- lm(age_difference ~ actor_1_age, data = dat)
+
+
+results_tibble <- tibble()
+
+# Iterate over each unique decade
+for (d in unique(dat$decade)) {
+  # Fit a linear model for the current decade
+  model <- lm(age_difference ~ actor_1_age, data = subset(dat, decade == d))
+  
+  # Extract coefficients and add a column for the decade
+  coefficients <- data.frame(
+    decade = d,
+    summary(model)$coefficients[1, 1],
+    summary(model)$coefficients[2, 1]
+  )
+  
+  # Combine the results into the tibble
+  results_tibble <- bind_rows(results_tibble, as_tibble(coefficients))
+}
+
+# Rename the columns for better clarity
+colnames(results_tibble) <- c("decade", "Intercept", "slope")
+
+# Print the resulting tibble
+results_tibble = results_tibble %>% 
+  arrange(desc(slope))
 ```
 
-Then, you can reference @fig-iris in the text and the appropriate cross-reference will be generated.
-
-You can find additional information about formatting figures generated from code in the [quarto documentation](https://quarto.org/docs/authoring/figures.html#computations).
+The linear model estimates reveal distinctive slopes representing the rate of change in age differences per unit increase in the older actor's age across different decades. Notably, the 1940s, 1970s, and 1950s exhibit steeper slopes (1.13, 1.04, and 0.871, respectively), indicating a more pronounced increase in age differences with advancing older actor ages. In contrast, the 1960s and 2020s present comparatively shallower slopes (0.438 and 0.412, respectively), suggesting a potential attenuation in the rate of increase in age differences during these decades.
 
 # Additional Exploration topic
 
@@ -375,6 +409,14 @@ The most active directors are `r top_10$Var1`.
 
 # Conclusion
 
+In conclusion, our analysis of age disparities in cinematic romantic relationships provides valuable insights into the detailed portrayal of such dynamics.
+
+Exploring relationship dynamics and conducting gender-based analyses uncovered significant differences in age gaps between male and female characters. Regression analysis across decades revealed varying trends, with steeper slopes in the 1940s, 1970s, and 1950s, indicating heightened age differences with older actors.
+
+Further investigations into directors with the highest age differences and those consistently portraying such relationships offered additional context. Notably, James Bond movies emerged as movies with the highest number of portrayed romantic relationships.
+
+This project contributes a new perspective to the understanding of age dynamics in cinematic love stories, emphasizing key contextual, gender-related, and temporal influences on on-screen relationships.
+
 # References
 
 1.  Wickham H, Averick M, Bryan J, Chang W, McGowan L, François R, et al. Welcome to the tidyverse. J Open Source Softw. 2019 Nov 21;4(43):1686.
@@ -384,19 +426,3 @@ The most active directors are `r top_10$Var1`.
 5.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4679423, viridis package version 0.6.4.
 6.  Garnier S, Ross N, Rudis R, Camargo PA, Sciaini M, Scherer C. *viridis(Lite) - Colorblind-Friendly Color Maps for R.* \[Internet\]. 2023. Available from: <https://sjmgarnier.github.io/viridis/>. doi:10.5281/zenodo.4678327, viridisLite package version 0.4.2.
 7.  Waring E, Quinn M, McNamara A, Arino de la Rubia E, Zhu H, Ellis S. *skimr: Compact and Flexible Summaries of Data.* 2023. R package version 2.1.5. <https://github.com/ropensci/skimr/>. Available from: <https://docs.ropensci.org/skimr/> (website).
-
-## Tips
-
-(delete this section from your report!)
-
-Almost anything you might want to know about how to format output in quarto can be found [here](https://quarto.org/docs/authoring/markdown-basics.html). Feel free to email/come to office hours to figure out how to do XYZ - part of the goal of making you write this report is that I want you to know how to write e.g. a journal paper in Quarto as well, so now's the time to experiment.
-
-If you want to know what the wordcount of your report is, you can run the following command in your terminal:
-
-```         
-pandoc --lua-filter wordcount.lua report.qmd
-```
-
-Notice that I have not pushed `_output/report.html` or the `_output/report_files/` folder to github - this is intentional. I have actually set `_output` to not show up in git, to encourage you all to NOT push the rendered files to github and to instead work from the markdown files directly.
-
-You may find it cleaner to create a figure subdirectory and store any figures that aren't created by R/Python in that folder. I encourage you to organize this repository in a sensible way.
