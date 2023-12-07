@@ -59,11 +59,11 @@ Our dataset was already organized by the principles of tidy data, which advocate
 
 The `dplyr` package's `mutate` function played a central role in our data manipulation process. This function facilitated the creation and modification of variables within the dataset, enabling the seamless introduction of calculated columns tailored to our analytical needs. Combined with `ymd` function from `lubridate` package, we have successfully ensured the transformation of the birth date variable into a standardized Date type within the dataset. Additionally, we employed `skim` function from `skimr` package to derive a simple overview of the data.
 
-In the gender gap analysis, age differences within the dataset were explored, specifically examining scenarios where the older actor was male compared to female. T-test was utilized to systematically assess whether significant distinctions existed in age based on the gender of the older actor. This analysis provided insights into potential age-related disparities within the dataset.
+In the gender gap analysis, age differences within the dataset were explored, specifically examining scenarios where the older actor was male compared to female. `T-test` was utilized to systematically assess whether significant distinctions existed in age based on the gender of the older actor. This analysis provided insights into potential age-related disparities within the dataset.
 
 Additionally, age differences were investigated across decades of movie release year using the `loess` regression model. This approach facilitated the identification of trends and patterns in age discrepancies over time. The use of loess regression allowed for the visualization of potential nonlinearities or trends not immediately apparent through simpler analyses.
 
-To further understand the relationship between the age of older actors and age differences across decades, a linear model was utilized. This analytical tool quantified and described the nature of this relationship, providing a comprehensive perspective on how age differences varied with the older actor's age within each decade.
+To further understand the relationship between the age of older actors and age differences across decades, a `linear model` was utilized. This analytical tool quantified and described the nature of this relationship, providing a comprehensive perspective on how age differences varied with the older actor's age within each decade.
 
 ```{r, results = 'hide'}
 #| echo: false
