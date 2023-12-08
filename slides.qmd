@@ -20,7 +20,7 @@ dat = read.csv("age_gaps.csv")
 colnames(dat)
 ```
 
-## Age distribution 
+## Age distribution
 
 ```{r}
 library(ggplot2)
@@ -34,7 +34,8 @@ ggplot(age, aes(x=age)) +
   theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
-## Age gap distribution 
+## Age gap distribution
+
 ```{r}
 library(plotly)
 
@@ -92,7 +93,7 @@ ggplot(dat, aes(x = decade, y = age_difference)) +
   theme(panel.grid = element_line(color = "lightgray", linetype = "dashed"))
 ```
 
-## Network analysis of the specific directors
+## Network analysis of the relationships in Woody Allen's movies
 
 ```{r}
 # Filter the DataFrame for a specific director
@@ -142,7 +143,7 @@ par(xpd = FALSE)
 
 ```
 
-## Network analysis of the specific directors
+## Network analysis of the relationships in Guy Hamilton's movies
 
 ```{r}
 # Filter the DataFrame for a specific director
@@ -241,7 +242,9 @@ ggplot(dat, aes(x = actor_1_age, y = age_difference)) +
 ```
 
 ## Extra investigation about directors
--   Directors with the most number of movies 
+
+-   Directors with the most number of movies
+
 ```{r}
 directors <- table(dat$director)
 
@@ -249,7 +252,8 @@ top_10 <- head(sort(directors, decreasing = TRUE), 10)
 top_10=as.data.frame(top_10)
 top_10
 ```
--   Directors with the number of couples at least 3 and and highest age difference
+
+-   Directors with at least 3 number of couples and the highest age gap
 
 ```{r}
 dat %>%
@@ -262,7 +266,7 @@ dat %>%
   top_directors3
 ```
 
-## Movies with the highest number of couples 
+## Movies with the highest number of couples
 
 ```{r}
 
@@ -276,12 +280,12 @@ dat %>%
   movie_name
 ```
 
--   James Bond movies 
+-   James Bond movies
 
 ## Conclusion
 
-- Significant difference between male and female actors in age difference (when one gender is older)
+-   Significant difference between male and female actors in age difference (when one gender is older)
 
-- Age difference tends to increase more with age in the 1940s 
+-   Age difference tends to increase more with age in the 1940s
 
-- James Bond movies feature the highest number of couples (3 out of top 5)
+-   James Bond movies feature the highest number of couples (3 out of top 5)
